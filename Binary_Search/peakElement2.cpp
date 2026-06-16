@@ -2,56 +2,78 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-
-int countLessEqual(vector<int> &row, int mid)
+bool checkPeak(vector<vector<int>> &arr, int cols)
 {
-    return upper_bound(row.begin(), row.end(), mid) - row.begin();
+    int n = arr.size();
+    int max_val = INT_MIN;
+    int index = -1;
+
+    // Iterate through each row to find the maximum element
+    // in the particular column
+    for (int i = 0; i < n; i++)
+    {
+        if (arr[i][cols] > max_val)
+        {
+            max_val = arr[i][cols];
+            index = i;
+        }
+    }
+    return index;
 }
 
-int median2DMatrix(vector<vector<int>> &arr)
+vector<int> peakElement(vector<vector<int>> &arr)
 {
     int n = arr.size();
     int m = arr[0].size();
 
-    int low = arr[0][0];
+    // Initialize the lower and upper bounds for binary search
+    int low = 0;
+    int high = m - 1;
 
-    int high = arr[0][m - 1];
-    for (int i = 1; i < n; i++)
-    {
-        low = min(low, arr[i][0]);
-        high = max(high, arr[i][m - 1]);
-    }
-    cout << high << " " << low << endl;
-    sort(arr.begin(), arr.end());
-
-    while (low < high)
+    // Perform binary search on columns
+    while (low <= high)
     {
         int mid = (low + high) / 2;
 
-    
-        int count = 0;
-        for (int i = 0; i < n; i++)
-        {
-            count += countLessEqual(arr[i], mid);
-        }
+        // Find the index of the row with the maximum element
+        // in the middle column
+        int row = checkPeak(arr, mid);
 
-        // If count is less than half, median is greater
-        if (count < (m * n + 1) / 2)
-            low = mid + 1;
+        // Determine the elements to the left and right of
+        // the middle element in the found row
+        int left = mid - 1 >= 0 ? arr[row][mid - 1] : INT_MIN;
+        int right = mid + 1 < m ? arr[row][mid + 1] : INT_MIN;
+
+        // Check if the middle element is greater than its neighbors
+        if (arr[row][mid] > left && arr[row][mid] > right)
+        {
+            return {row, mid};
+        }
+        else if (left > arr[row][mid])
+        {
+            high = mid - 1;
+        }
         else
-            high = mid;
+        {
+            low = mid + 1;
+        }
     }
 
-    // Final low is the median
-    return low;
+    // Return {-1, -1} if no peak element is found
+    return {-1, -1};
 }
 
 int main()
 {
-    vector<vector<int>> matrix = {
-        {1, 3, 5},
-        {2, 6, 9},
-        {3, 6, 9}};
-    cout << "Median: " << median2DMatrix(matrix) << endl;
+    vector<vector<int>> mat = {
+        {4, 2, 5, 1, 4, 5},
+        {2, 9, 3, 2, 3, 2},
+        {1, 7, 6, 0, 1, 3},
+        {3, 6, 2, 3, 7, 2}};
+
+    vector<int> peak = peakElement(mat);
+    cout << "The row of peak element is " << peak[0]
+         << " and column of the peak element is " << peak[1] << endl;
+
     return 0;
 }
