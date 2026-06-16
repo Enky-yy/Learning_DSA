@@ -1,0 +1,3 @@
+// Brute
+// hashing
+// sum / xor
