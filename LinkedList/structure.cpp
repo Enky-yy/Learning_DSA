@@ -1,7 +1,6 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
-
 using namespace std;
 
 template <typename T>
@@ -9,10 +8,10 @@ class Node
 {
 public:
     T data;
-    Node <T>*next;
+    Node<int> *next;
 
 public:
-    Node(T data1, T *next1)
+    Node(T data1, Node<int> *next1)
     {
         data = data1;
         next = next1;
@@ -62,17 +61,49 @@ int lengthLL(Node<int> *LL)
     return cnts;
 }
 
-bool checkIfPresent(Node<int> * LL , int target){
-    Node<int> * address = LL;
-    while (address!=nullptr)
+bool checkIfPresent(Node<int> *LL, int target)
+{
+    Node<int> *address = LL;
+    while (address != nullptr)
     {
-        if(address->data == target){
+        if (address->data == target)
+        {
             return true;
         }
         address = address->next;
     }
     return false;
-    
+}
+
+Node<int> *removeElement(Node<int> *LL, int target)
+{
+    if (!LL)
+        return LL;
+
+    Node<int> *ans= LL;
+    if (LL->data == target)
+    {
+        Node<int> *temp= LL;
+        LL=LL->next;
+        delete temp;
+        return LL;
+        
+    }
+
+    while (ans && ans->next)
+    {
+        if (ans->next->data == target)
+        {
+            Node<int> *exc = ans->next;
+            ans->next = ans->next->next;
+            delete exc;
+        }
+        else
+        {
+            ans = ans->next;
+        }
+    }
+    return LL;
 }
 
 int main()
@@ -89,14 +120,20 @@ int main()
     cout << head->next->data << endl;
 
     traversalLL(head);
-    cout<<'\n'<<lengthLL(head)<<endl;
+    cout << '\n'
+         << lengthLL(head) << endl;
 
-    if(checkIfPresent(head, 3)){
-        cout<< "Found"<<endl;
+    if (checkIfPresent(head, 3))
+    {
+        cout << "Found" << endl;
     }
-    else{
-        cout<<"Not Found"<<endl;
+    else
+    {
+        cout << "Not Found" << endl;
     }
+
+    Node<int> *k = removeElement(head, 3);
+    traversalLL(k);
 
     return 0;
 }
