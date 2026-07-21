@@ -10,11 +10,15 @@ ll solve (ll n , vector<ll> &dp ,vector<ll> money){
         return n;
     if(dp[n]!=-1)
         return dp[n];
-    ll pick = money[n] + solve(n-2)
+    ll pick = money[n] + solve(n-2,dp,money);
+    ll notPick = solve(n-1, dp,money);
+    dp[n] = max(pick, notPick);
+    return dp[n];
 }
 
 int main() {
-    vector<ll> money ={2,1,4,9};
+    vector<ll> money ={1,5,2,1,6};
+    money.push_back(money[0]);
     ll n = money.size();
     vector<ll> dp(n,-1);
     cout<<solve(n-1,dp, money);
