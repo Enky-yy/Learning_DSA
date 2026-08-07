@@ -2,81 +2,72 @@
 
 using namespace std;
 using ll = long long;
-using pll = pair<int, ll>;
-
-bool dfs(int i, const vector<vector<pll>> &arr, vector<int> &vis, vector<int> &parent, ll &sum, vector<int> &s)
-{
-    vis[i] = 1;
-    parent[i] = 1;
-    for (auto it : arr[i])
-    {
-        int node = it.first;
-        ll weight = it.second;
-
-        sum += weight;
-
-        if (!vis[node])
-        {
-            if (dfs(node, arr, vis, parent, sum, s) == true)
-            {
-                if (sum < 0)
-                {
-                    s.push_back(node);
-                    return true;
-                }
-            }
-        }
-        else if (parent[node])
-        {
-            if (sum < 0)
-            {
-                s.push_back(node);
-                return true;
-            }
-        }
-        sum-=weight;
-    }
-    parent[i] = 0;
-    
-    return false;
-}
 
 int main()
 {
     int n, m;
     cin >> n >> m;
-    vector<vector<pair<int, ll>>> arr(n + 1);
+
+    vector<vector<pair<int, ll>>> grid(n + 1);
     for (int i = 0; i < m; i++)
     {
         int a, b;
-        ll c;
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c});
+        ll wt;
+        cin >> a >> b >> wt;
+        grid[a].push_back({b, wt});
     }
-    vector<int> parent(n + 1, 0);
-    vector<int> vis(n + 1, 0);
-    vector<int> s;
+    vector<int> parent(n + 1, -1);
+    vector<ll> dis(n + 1, 0);
 
-    for (int i = 1; i <= n; i++)
+    int check = -1;
+
+    for (int iter = 1; iter <= n; iter++)
     {
-        ll sum = 0;
-        if (!vis[i])
-            if (dfs(i, arr, vis, parent, sum, s) == true)
+        check = -1;
+        for (int i = 1; i <= n; i++)
+        {
+            for (auto it : grid[i])
             {
-                if (sum < 0)
+                int node = it.first;
+                ll wt = it.second;
+
+                if (wt + dis[i] < dis[node])
                 {
-                    cout << "YES" << endl;
-                    s.push_back(i);
-                    reverse(s.begin(), s.end());
-                    for (auto it : s)
-                    {
-                        cout << it << " ";
-                    }
-                    return 0;
+                    dis[node] = wt + dis[i];
+                    parent[node] = i;
+                    check = node;
                 }
             }
+        }
     }
-    cout << "NO" << endl;
+
+    if (check == -1)
+    {
+        cout << "NO" << endl;
+        return 0;
+    }
+
+    for (int i = 0; i < n; i++)
+
+        check = parent[check];
+    vector<int> ans;
+
+    int curr = check;
+    do
+    {
+        ans.push_back(check);
+        check = parent[check];
+    } while ((curr != check));
+
+    ans.push_back(check);
+
+    reverse(ans.begin(), ans.end());
+    cout << "YES" << endl;
+    for (auto it : ans)
+    {
+        cout << it << " ";
+    }
+    cout << endl;
 
     return 0;
 }
